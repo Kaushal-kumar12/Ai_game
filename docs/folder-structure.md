@@ -8,7 +8,8 @@
 │   ├── deployment.md
 │   ├── folder-structure.md
 │   ├── mobile-ui-structure.md
-│   └── secure-execution.md
+│   ├── secure-execution.md
+│   └── review-and-change-workflow.md
 ├── backend/
 │   ├── package.json
 │   ├── tsconfig.json

@@ -37,6 +37,7 @@ This repository contains a production-ready starter blueprint for **PyQuest Mobi
 - API surface: `docs/backend-api.md`
 - Security and sandboxing: `docs/secure-execution.md`
 - Deployment: `docs/deployment.md`
+- Validation & change workflow: `docs/review-and-change-workflow.md`
 - Backend implementation skeleton: `backend/`
 - Mobile implementation skeleton: `mobile/`
 
