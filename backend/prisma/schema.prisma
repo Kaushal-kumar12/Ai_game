@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id              String         @id @default(cuid())
+  email           String?        @unique
+  displayName     String
+  avatarUrl       String?
+  role            Role           @default(USER)
+  xp              Int            @default(0)
+  level           Int            @default(1)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  progress        UserProgress[]
+  submissions     Submission[]
+  userAchievements UserAchievement[]
+  badges          UserBadge[]
+  gameStats       GameStat?
+}
+
+model Level {
+  id            String         @id @default(cuid())
+  slug          String         @unique
+  title         String
+  difficulty    String
+  topic         String
+  isCyber       Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  progress      UserProgress[]
+  submissions   Submission[]
+}
+
+model UserProgress {
+  id            String      @id @default(cuid())
+  userId        String
+  levelId       String
+  status        String
+  score         Int         @default(0)
+  startedAt     DateTime?
+  completedAt   DateTime?
+
+  user          User        @relation(fields: [userId], references: [id])
+  level         Level       @relation(fields: [levelId], references: [id])
+
+  @@unique([userId, levelId])
+}
+
+model Achievement {
+  id            String             @id @default(cuid())
+  code          String             @unique
+  title         String
+  description   String
+  xpReward      Int                @default(0)
+  users         UserAchievement[]
+}
+
+model UserAchievement {
+  id              String        @id @default(cuid())
+  userId          String
+  achievementId   String
+  claimedAt       DateTime      @default(now())
+
+  user            User          @relation(fields: [userId], references: [id])
+  achievement     Achievement   @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+}
+
+model LeaderboardEntry {
+  id            String      @id @default(cuid())
+  userId        String
+  season        String
+  rank          Int
+  score         Int
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([userId, season])
+}
+
+model Submission {
+  id            String      @id @default(cuid())
+  userId        String
+  levelId       String
+  sourceCode    String
+  language      String      @default("python")
+  status        String
+  runtimeMs     Int?
+  memoryKb      Int?
+  output        String?
+  createdAt     DateTime    @default(now())
+
+  user          User        @relation(fields: [userId], references: [id])
+  level         Level       @relation(fields: [levelId], references: [id])
+}
+
+model Badge {
+  id            String       @id @default(cuid())
+  code          String       @unique
+  title         String
+  iconUrl       String?
+  users         UserBadge[]
+}
+
+model UserBadge {
+  id            String      @id @default(cuid())
+  userId        String
+  badgeId       String
+  awardedAt     DateTime    @default(now())
+
+  user          User        @relation(fields: [userId], references: [id])
+  badge         Badge       @relation(fields: [badgeId], references: [id])
+
+  @@unique([userId, badgeId])
+}
+
+model GameStat {
+  id                 String      @id @default(cuid())
+  userId             String      @unique
+  streakDays         Int         @default(0)
+  missionsCompleted  Int         @default(0)
+  bossWins           Int         @default(0)
+  pvpWins            Int         @default(0)
+
+  user               User        @relation(fields: [userId], references: [id])
+}
